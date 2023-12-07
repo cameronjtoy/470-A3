@@ -5,11 +5,14 @@
 
 #ifndef A3_HPP
 #define A3_HPP
+#include <cuda.h>
 #include <math.h>
+#include <cuda_runtime_api.h>
+#include <iostream>
 
 using namespace std;
 
-__global__ void evaluate(float *x, float *y, int n, float h,float A){
+__global__ void function(float *x, float *y, int n, float h,float A){
     extern __shared__ float buf[];
     float* Xs = buf;
 
@@ -45,7 +48,7 @@ void gaussian_kde(int n, float h, const std::vector<float>& x, std::vector<float
    cudaMalloc(&deviceY, size);
 
    cudaMemcpy(deviceX, x.data(), size, cudaMemcpyHostToDevice);
-   evaluate<<<(int)ceil((float)n/(float)m),m,m*sizeof(float)>>>(deviceX, deviceY,n,h,A);
+   function<<<(int)ceil((float)n/(float)m),m,m*sizeof(float)>>>(deviceX, deviceY,n,h,A);
    cudaMemcpy(y.data(), deviceY, size, cudaMemcpyDeviceToHost);
 
    // cout<<A<<endl;
